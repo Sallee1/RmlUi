@@ -556,6 +556,8 @@ void ElementDocument::DirtyPosition()
 void ElementDocument::DirtyLayout()
 {
 	layout_dirty = true;
+	if (context)
+		context->OnDocumentLayoutDirtied();
 }
 
 bool ElementDocument::IsLayoutDirty()

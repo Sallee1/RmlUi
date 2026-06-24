@@ -1624,4 +1624,19 @@ double Context::GetNextUpdateDelay() const
 	return next_update_timeout;
 }
 
+bool Context::IsAnyDocumentLayoutDirty() const
+{
+	return m_document_layout_dirtied;
+}
+
+void Context::ResetDocumentLayoutDirty()
+{
+	m_document_layout_dirtied = false;
+}
+
+void Context::OnDocumentLayoutDirtied()
+{
+	m_document_layout_dirtied = true;
+}
+
 } // namespace Rml

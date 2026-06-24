@@ -291,6 +291,15 @@ public:
 	/// @return Time until the next update is expected.
 	double GetNextUpdateDelay() const;
 
+	/// Returns true if any document has a dirty layout (DOM changes, data model updates, pseudo-class changes, etc.)
+	/// that requires re-rendering. Unlike GetNextUpdateDelay() which only tracks animation/transition/scroll state,
+	/// this flag also reflects DirtyLayout() calls from inner_rml assignment and other DOM mutations.
+	/// @note Must be called after Update() to be meaningful, as Update() consumes the dirty flag.
+	bool IsAnyDocumentLayoutDirty() const;
+
+	/// Reset the accumulated layout dirty flag after consuming it.
+	/// Called after Update() + IsAnyDocumentLayoutDirty() to clear for the next frame.
+	void ResetDocumentLayoutDirty();
 protected:
 	void Release() override;
 
@@ -388,6 +397,10 @@ private:
 	// See RequestNextUpdate() and NextUpdateRequested() for details.
 	double next_update_timeout = 0;
 
+	// Accumulated flag: true if any document has been dirtied since last HasDirtyLayoutSinceLastUpdate().
+	// Set by OnDocumentLayoutDirtied() (called from ElementDocument::DirtyLayout()).
+	bool m_document_layout_dirtied = true;  // initially true so first frame always renders
+
 	// Internal callback for when an element is detached or removed from the hierarchy.
 	void OnElementDetach(Element* element);
 	// Internal callback for when a new element gains focus.
@@ -409,6 +422,9 @@ private:
 
 	// Scroll the target by the given amount, using smooth scrolling.
 	void PerformSmoothscrollOnTarget(Element* target, Vector2f delta_offset, ScrollBehavior scroll_behavior);
+
+	// Called by ElementDocument::DirtyLayout() to set the accumulated dirty flag.
+	void OnDocumentLayoutDirtied();
 
 	// Returns the data model with the provided name, or nullptr if it does not exist.
 	DataModel* GetDataModelPtr(const String& name) const;
@@ -448,6 +464,7 @@ private:
 	static void SendEvents(const ElementSet& old_items, const ElementSet& new_items, EventId id, const Dictionary& parameters);
 
 	friend class Rml::Element;
+	friend class Rml::ElementDocument;
 };
 
 } // namespace Rml

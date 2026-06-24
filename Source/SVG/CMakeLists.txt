@@ -14,3 +14,7 @@ target_sources(rmlui_core PRIVATE
 )
 
 target_compile_definitions(rmlui_core PRIVATE "RMLUI_SVG_PLUGIN")
+
+if(NOT BUILD_SHARED_LIBS)
+	target_compile_definitions(rmlui_core PRIVATE "LUNASVG_BUILD_STATIC")
+endif()

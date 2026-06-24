@@ -769,6 +769,10 @@ void Element::SetPseudoClass(const String& pseudo_class, bool activate)
 		// Include siblings in case of RCSS presence of sibling combinators '+', '~'.
 		DirtyDefinition(DirtyNodes::SelfAndSiblings);
 		OnPseudoClassChange(pseudo_class, activate);
+		if (Context* ctx = GetContext()) {
+			// ctx->RequestNextUpdate(0);
+			ctx->OnDocumentLayoutDirtied();
+		}
 	}
 }
 

@@ -98,7 +98,7 @@ endfunction()
 		- target: The name of the target to set
 ]]
 function(set_common_target_options target)
-	target_compile_features(${target} PUBLIC cxx_std_14)
+	target_compile_features(${target} PUBLIC cxx_std_17)
 	set_target_properties(${target} PROPERTIES C_EXTENSIONS OFF CXX_EXTENSIONS OFF)
 
 	if(RMLUI_COMPILER_OPTIONS)
@@ -110,6 +110,10 @@ function(set_common_target_options target)
 			if(CMAKE_GENERATOR MATCHES "Visual Studio")
 				target_compile_options(${target} PRIVATE /MP)
 			endif()
+		endif()
+		if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+			# Triggers on Rml::Colour assignment in GCC 16.
+			target_compile_options(${target} PRIVATE -Wno-stringop-overflow)
 		endif()
 	endif()
 
